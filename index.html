@@ -3,10 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <title>Number Guessing Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    input, button, select { padding: 10px; font-size: 16px; margin: 5px; }
-    #result, #question { margin-top: 20px; font-weight: bold; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      background-color: #e6f2ff; /* 水色背景 */
+    }
+    input, button, select {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background-color: #0078D7;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    #result, #question, #quizResult {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #quizSection {
+      margin-top: 20px;
+      display: none;
+      background: #fff;
+      padding: 1em;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 <body>
@@ -15,7 +50,8 @@
   <input type="number" id="guessInput" placeholder="Enter your guess">
   <button onclick="checkGuess()">Submit</button>
   <p id="result"></p>
-  <div id="quizSection" style="display:none;">
+
+  <div id="quizSection">
     <p id="question"></p>
     <select id="quizAnswer"></select>
     <button onclick="checkQuiz()">Answer</button>
@@ -69,7 +105,7 @@
         document.getElementById("result").textContent = "🔺 Too high! Try again.";
       } else {
         correctCount++;
-        document.getElementById("result").textContent = `✅ Correct! You guessed it in ${attempts} attempts.`;
+        document.getElementById("result").textContent = `✅ Correct! You guessed it in ${attempts} attempts. 🎉 Next question!`;
         nextRound();
         return;
       }
@@ -90,8 +126,6 @@
         locked = true;
         quizIndex = 0;
         showUnlockQuiz();
-      } else {
-        document.getElementById("result").textContent += " 🎉 Next question!";
       }
     }
 
