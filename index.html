@@ -1,146 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Number Guessing Game</title>
+  <title>Number Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    input, button, select { padding: 10px; font-size: 16px; margin: 5px; }
-    #result, #question { margin-top: 20px; font-weight: bold; }
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+    #janken { display: none; margin-top: 20px; }
+    button { margin: 5px; padding: 10px 20px; font-size: 16px; }
+    #result, #janken-result { font-weight: bold; margin-top: 10px; }
   </style>
 </head>
 <body>
-  <h1>🎲 Guess the Number!</h1>
-  <p id="instruction">I'm thinking of a number between <span id="range">1 and 10</span>.</p>
-  <input type="number" id="guessInput" placeholder="Enter your guess">
+  <h1>Guess the Number!</h1>
+  <input type="number" id="guess" min="1" max="5">
   <button onclick="checkGuess()">Submit</button>
   <p id="result"></p>
-  <div id="quizSection" style="display:none;">
-    <p id="question"></p>
-    <select id="quizAnswer"></select>
-    <button onclick="checkQuiz()">Answer</button>
-    <p id="quizResult"></p>
+  <p id="streak"></p>
+
+  <div id="janken">
+    <h2>🍬 Candy Challenge! Let's play Rock, Paper, Scissors!</h2>
+    <button onclick="playJanken('Rock')">Rock</button>
+    <button onclick="playJanken('Paper')">Paper</button>
+    <button onclick="playJanken('Scissors')">Scissors</button>
+    <p id="janken-result"></p>
   </div>
 
   <script>
-    let maxNumber = 10;
-    let secretNumber = Math.floor(Math.random() * maxNumber) + 1;
-    let attempts = 0;
-    let correctCount = 0;
-    let locked = false;
-    let quizIndex = 0;
-
-    const easyQuestions = [
-      { q: "What color is the sky?", a: ["Blue", "Green", "Red"], correct: "Blue" },
-      { q: "How many legs does a dog have?", a: ["2", "4", "6"], correct: "4" },
-      { q: "Which one is a fruit?", a: ["Carrot", "Apple", "Potato"], correct: "Apple" },
-      { q: "What do bees make?", a: ["Milk", "Honey", "Bread"], correct: "Honey" },
-      { q: "Which is a bird?", a: ["Cat", "Eagle", "Fish"], correct: "Eagle" },
-      { q: "What do you wear on your feet?", a: ["Shoes", "Hat", "Gloves"], correct: "Shoes" },
-      { q: "Which is a season?", a: ["Monday", "Winter", "Pizza"], correct: "Winter" },
-      { q: "What do you drink?", a: ["Water", "Chair", "Pencil"], correct: "Water" },
-      { q: "Which is a number?", a: ["Seven", "Tree", "Book"], correct: "Seven" },
-      { q: "What do you use to write?", a: ["Pen", "Spoon", "Ball"], correct: "Pen" }
-    ];
-
-    const unlockQuestions = [
-      { q: "How old are you?", a: ["6", "10", "12"], correct: null },
-      { q: "What do you like?", a: ["Cats", "Pizza", "Games"], correct: null },
-      { q: "Where do you live?", a: ["Japan", "USA", "Mars"], correct: null }
-    ];
+    let answer = Math.floor(Math.random() * 10) + 1;
+    let streak = 0;
 
     function checkGuess() {
-      if (locked) {
-        document.getElementById("result").textContent = "🔒 Locked! Answer the quiz to continue.";
-        return;
-      }
+      const guess = parseInt(document.getElementById('guess').value);
+      const result = document.getElementById('result');
+      const streakDisplay = document.getElementById('streak');
 
-      const guess = parseInt(document.getElementById("guessInput").value);
-      attempts++;
-
-      if (isNaN(guess)) {
-        document.getElementById("result").textContent = "❗ Please enter a valid number.";
-        return;
-      }
-
-      if (guess < secretNumber) {
-        document.getElementById("result").textContent = "🔻 Too low! Try again.";
-      } else if (guess > secretNumber) {
-        document.getElementById("result").textContent = "🔺 Too high! Try again.";
+      if (guess === answer) {
+        streak++;
+        result.textContent = "✅ Correct!";
+        answer = Math.floor(Math.random() * 10) + 1;
       } else {
-        correctCount++;
-        document.getElementById("result").textContent = `✅ Correct! You guessed it in ${attempts} attempts.`;
-        nextRound();
-        return;
+        streak = 0;
+        result.textContent = "❌ Try again!";
       }
 
-      if (attempts >= 3) {
-        locked = true;
-        showQuiz();
+      streakDisplay.textContent = `Streak: ${streak}`;
+
+      if (streak === 3) {
+        document.getElementById('janken').style.display = 'block';
       }
     }
 
-    function nextRound() {
-      attempts = 0;
-      secretNumber = Math.floor(Math.random() * maxNumber) + 1;
+    function playJanken(userChoice) {
+      const choices = ['Rock', 'Paper', 'Scissors'];
+      const aiChoice = choices[Math.floor(Math.random() * 3)];
+      const resultText = `You chose ${userChoice}, I chose ${aiChoice}.`;
 
-      if (correctCount >= 3 && maxNumber === 10) {
-        maxNumber = 100;
-        document.getElementById("range").textContent = "1 and 100";
-        locked = true;
-        quizIndex = 0;
-        showUnlockQuiz();
+      let outcome = '';
+      if (userChoice === aiChoice) {
+        outcome = "It's a draw!";
+      } else if (
+        (userChoice === 'Rock' && aiChoice === 'Scissors') ||
+        (userChoice === 'Paper' && aiChoice === 'Rock') ||
+        (userChoice === 'Scissors' && aiChoice === 'Paper')
+      ) {
+        outcome = "🎉 You win! Take your candy!";
       } else {
-        document.getElementById("result").textContent += " 🎉 Next question!";
+        outcome = "😅 You lose! Try again next time!";
       }
-    }
 
-    function showQuiz() {
-      const q = easyQuestions[Math.floor(Math.random() * easyQuestions.length)];
-      document.getElementById("quizSection").style.display = "block";
-      document.getElementById("question").textContent = q.q;
-      const select = document.getElementById("quizAnswer");
-      select.innerHTML = "";
-      q.a.forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt;
-        option.textContent = opt;
-        select.appendChild(option);
-      });
-      select.dataset.correct = q.correct;
-    }
-
-    function showUnlockQuiz() {
-      const q = unlockQuestions[quizIndex];
-      document.getElementById("quizSection").style.display = "block";
-      document.getElementById("question").textContent = q.q;
-      const select = document.getElementById("quizAnswer");
-      select.innerHTML = "";
-      q.a.forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt;
-        option.textContent = opt;
-        select.appendChild(option);
-      });
-      select.dataset.correct = "any";
-    }
-
-    function checkQuiz() {
-      const select = document.getElementById("quizAnswer");
-      const answer = select.value;
-      const correct = select.dataset.correct;
-
-      if (correct === "any" || answer === correct) {
-        document.getElementById("quizResult").textContent = "✅ Correct! You are unlocked.";
-        locked = false;
-        document.getElementById("quizSection").style.display = "none";
-        quizIndex++;
-        if (quizIndex >= unlockQuestions.length) {
-          quizIndex = 0;
-        }
-      } else {
-        document.getElementById("quizResult").textContent = "❌ Try again!";
-      }
+      document.getElementById('janken-result').textContent = resultText + ' ' + outcome;
     }
   </script>
 </body>
