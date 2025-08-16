@@ -46,7 +46,7 @@
 </head>
 <body>
   <h1>🎲 Guess the Number!</h1>
-  <p id="instruction">I'm thinking of a number between <span id="range">1 and 10</span>.</p>
+  <p id="instruction">I'm thinking of a number between <span id="range">1 and 5</span>.</p>
   <input type="number" id="guessInput" placeholder="Enter your guess">
   <button onclick="checkGuess()">Submit</button>
   <p id="result"></p>
@@ -59,7 +59,7 @@
   </div>
 
   <script>
-    let maxNumber = 10;
+    let maxNumber = 5;
     let secretNumber = Math.floor(Math.random() * maxNumber) + 1;
     let attempts = 0;
     let correctCount = 0;
